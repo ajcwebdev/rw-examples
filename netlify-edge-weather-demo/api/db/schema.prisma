@@ -1,0 +1,65 @@
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = "native"
+}
+
+model WeatherReport {
+  id                  String    @id @default(uuid())
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  worldCity           WorldCity @relation(fields: [worldCityId], references: [id])
+  worldCityId         String
+  headline            String
+  description         String
+  icon                String
+  tempFahrenheit      Int
+  feelsLikeFahrenheit Int
+  tempMinFahrenheit   Int
+  tempMaxFahrenheit   Int
+  tempCelcius         Int
+  feelsLikeCelcius    Int
+  tempMinCelcius      Int
+  tempMaxCelcius      Int
+  temp                Float
+  feelsLike           Float
+  tempMin             Float
+  tempMax             Float
+  pressure            Int
+  humidity            Int
+  windSpeed           Float
+  windDegrees         Int
+  sunrise             DateTime
+  sunset              DateTime
+}
+
+model WorldCity {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  simpleMapsId BigInt   @unique
+  city         String
+  cityAscii    String
+  lat          Float
+  lng          Float
+  country      String
+  iso2         String
+  iso3         String
+  adminName    String?
+  capital      String?
+  population   Int?     @default(0)
+
+
+  WeatherReport WeatherReport[]
+  @@unique([simpleMapsId, city])
+  @@unique([simpleMapsId, city, cityAscii, country])
+  @@index([city])
+  @@index([cityAscii])
+  @@index([country])
+  @@index([city, country])
+  @@index([cityAscii, country])
+}
